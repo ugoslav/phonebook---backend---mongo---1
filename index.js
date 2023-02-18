@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
 const app = express()
+const Person = require("./models/person")
 
 app.use(express.json())
 app.use(cors())
@@ -14,7 +16,6 @@ const exampleWare = (req,res,next) => {
 }
 
 app.use(exampleWare)
-
 
 let persons = 
 [
@@ -42,25 +43,31 @@ let persons =
         "id" : 5,
         "name" : "Robert Schnell",
         "number" : "444-4456-3562"
+    },
+    {
+        "id" : 6,
+        "name" : "Emraan Hashmi",
+        "number" : "442-5256-9295"
     }
 ]
 
 app.get("/api/persons" , (req,res) => {
-    res.json(persons)
+    Person.find({}).then(people => {
+        res.json(people)
+    })
 })
 
 app.get("/api/info" , (req , res) => {
     let date = new Date()
-    res.end(`Phonebook has info for ${persons.length} people\n\n${date}`)
+    Person.find({}).then(people => {
+        res.end(`Phonebook has info for ${people.length} people\n\n${date}`)
+    })
 })
 
 app.get("/api/persons/:uid" , (req,res) => {
-    const id = Number(req.params.uid)
-    const person = persons.find(instance => instance.id === id)
-    if(person)
+    Person.findById(req.params.uid).then(person => {
         res.json(person)
-    else
-        res.status(404).send("<h2>Der person,der du suchst,ist nicht in unserem buch</h2>")
+    })
 })
 
 app.delete("/api/persons/:haturi" , (req , res) => {
@@ -72,33 +79,23 @@ app.delete("/api/persons/:haturi" , (req , res) => {
 
 app.post("/api/persons" , (req , res) => {
 
-    const generateId = () => {
-        return Math.floor(Math.random() * 1000)
-    }
-
     const body = req.body
 
-    if(!body.number || !body.name)                      //Making name and number mandatory
-        return res.status(400).send("<h1>Name und nummer sind notig</h1>")
-    
-    
-    let commonName = persons.find(person => person.name === body.name)      //Checking the name already exists in the phonebook or not
-    if (commonName)
-        return res.status(400).send("<h1>Ein andere person mit ahnlichen namen ist schon da</h1>")
-        
+    if (body.content === undefined) {
+    return response.status(400).json({ error: 'content missing' })
+  }
 
-    let personToBeAdded = {
-        name : body.name,
-        number : body.number,
-        id : generateId()
-    }
+  const person = new Person({
+    name : body.name,
+    number : body.number,
+  })
 
-    console.log(personToBeAdded)
-    persons = persons.concat(personToBeAdded)
-    res.json(persons)
+  person.save().then(savedperson => {
+    response.json(savedperson)
+  })
 })
 
-let PORT = 3001
+let PORT = process.env.PORT
 
 app.listen(PORT || 3001 , () => {
     console.log(`Listening now at localhost:${PORT || 3001}`)
