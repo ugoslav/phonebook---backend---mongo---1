@@ -5,7 +5,6 @@ Content-Type: application/json
     "name" : "Klive Hudler",
     "number" : "783-2345-8582"
 }
-
 ###
 
 POST http://localhost:3001/api/persons
@@ -15,7 +14,6 @@ Content-Type: application/json
     "name" : "Open Klugmann",
     "number" : "883-4585-2848"
 }
-
 ###
 
 POST http://localhost:3001/api/persons

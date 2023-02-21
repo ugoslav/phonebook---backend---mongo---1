@@ -1,5 +1,15 @@
-DELETE http://localhost:3001/api/persons/63f0f9e8c6e702be3b2177c3
+DELETE http://localhost:3001/api/persons/63f0f9e8c6e702be3b21
 
 ###
 
 GET http://localhost:3001/api/persons/63eb56185fc25f4ffd35b39e
+
+###
+
+PUT http://localhost:3001/api/persons/63f48aeeb1408b588aee4238
+Content-Type: application/json
+
+{
+    "name" : "Clive Ortland",
+    "number" : "8943-56-3462"
+}
