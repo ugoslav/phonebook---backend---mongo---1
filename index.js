@@ -38,7 +38,7 @@ app.get("/api/persons/:uid" , (req,res,next) => {
   })
 })
 
-app.post("/api/persons" , (req , res) => {
+app.post("/api/persons" , (req , res , next) => {
   
   const body = req.body
   
@@ -51,9 +51,11 @@ app.post("/api/persons" , (req , res) => {
     number : body.number,
   })
   
-  person.save().then(savedperson => {
-    res.json(savedperson)
-  })
+  person.save()
+    .then(savedperson => {
+      res.json(savedperson)
+    })
+    .catch(err => next(err))
 })
 
 app.put("/api/persons/:id" , (req, res , next) => {
@@ -86,6 +88,9 @@ const errorHandler = (error , req, res , next) => {
 
   if(error.name === 'CastError'){
     return res.status(400).send({ error : "malformatted id"})
+  }
+  else if(error.name === 'ValidationError'){
+    return res.status(400).send("<h2>Length of a name must be at least 3 characters long</h2>")
   }
 
   next(error)
